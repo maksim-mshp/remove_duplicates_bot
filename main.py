@@ -1,4 +1,3 @@
-from decimal import DivisionByZero
 import json
 import telebot
 import traceback
@@ -13,12 +12,21 @@ bot = telebot.TeleBot(token)
 storage = Storage()
 logger = Logger()
 
+@bot.message_handler(commands=["/set_time_limit"])
+def set_time_limit(message):
+  if storage.is_admin(message.from_user.id):
+    try:
+      time_limit = int(message.text.split()[1])
+      storage.set_time_limit
+    except:
+      bot.reply_to(message, "❌ Не удалось изменить time_limit")
+
 @bot.message_handler()
 def echo_all(message):
-  if storage.is_exists(message.chat.id, message.text):
+  if storage.is_exists(message):
     bot.delete_message(message.chat.id, message.id)
   else:
-    storage.add(message.chat.id, message.text)
+    storage.add(message)
     
 def start():
   while True:
