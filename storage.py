@@ -1,4 +1,4 @@
-import json
+import time
 import sqlite3
 
 class Storage:
@@ -7,9 +7,13 @@ class Storage:
     self.connection = sqlite3.connect(self.filename, check_same_thread=False)
     self.cursor = self.connection.cursor()
   
-  def is_exists(self, message) -> bool:
-    self.cursor.execute("SELECT * FROM messages WHERE chat = ? AND user = ? AND text = ?", [message.chat.id, message.from_user.id, message.text])
-    return self.cursor.fetchone() != None
+  def find(self, message):
+    self.cursor.execute('SELECT value FROM config WHERE key = "time_limit"')
+    time_limit = int(self.cursor.fetchone()[0]) * 60 * 60
+    now = int(time.time())
+    self.cursor.execute("SELECT * FROM messages WHERE chat = ? AND user = ? AND text = ? AND datetime > ?",
+                        [message.chat.id, message.from_user.id, message.text, now - time_limit])
+    return self.cursor.fetchone()
   
   def add(self, message) -> None:
     self.cursor.execute("INSERT INTO messages VALUES (?, ?, ?, ?, ?)", [message.chat.id, message.id, message.from_user.id, message.text, message.date])

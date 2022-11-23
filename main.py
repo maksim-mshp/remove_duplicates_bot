@@ -31,10 +31,12 @@ def all(message):
     change_config(message)
     return
   
-  if storage.is_exists(message):
+  r = storage.find(message)
+  
+  if r != None:
     bot.delete_message(message.chat.id, message.id)
-  else:
-    storage.add(message)
+  
+  storage.add(message)
     
 def start():
   while True:
