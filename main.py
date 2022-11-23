@@ -17,7 +17,7 @@ def set_time_limit(message):
   if storage.is_admin(message.from_user.id):
     try:
       time_limit = int(message.text.split()[1])
-      storage.set_time_limit
+      storage.set_time_limit(time_limit)
     except:
       bot.reply_to(message, "❌ Не удалось изменить time_limit")
 
