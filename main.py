@@ -12,17 +12,25 @@ bot = telebot.TeleBot(token)
 storage = Storage()
 logger = Logger()
 
-@bot.message_handler(commands=["/set_time_limit"])
-def set_time_limit(message):
+def change_config(message):
   if storage.is_admin(message.from_user.id):
     try:
-      time_limit = int(message.text.split()[1])
-      storage.set_time_limit(time_limit)
+      words = message.text.split()
+      key = words[0].replace("/set_", "")
+      value = int(words[1])
+      storage.change_config(key, value)
+      bot.reply_to(message, f"✅ {key} успешно изменён")
     except:
-      bot.reply_to(message, "❌ Не удалось изменить time_limit")
+      bot.reply_to(message, f"❌ Не удалось изменить {key}")
 
-@bot.message_handler()
-def echo_all(message):
+@bot.message_handler(content_types=['text'])
+def all(message):
+  words = message.text.split()
+  
+  if words[0].find("/set_") != -1:
+    change_config(message)
+    return
+  
   if storage.is_exists(message):
     bot.delete_message(message.chat.id, message.id)
   else:

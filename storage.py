@@ -16,11 +16,11 @@ class Storage:
     self.connection.commit()
     
   def is_admin(self, uuid) -> bool:
-    self.cursor.execute("SELECT * FROM admins WHERE id = ?", [uuid])
+    self.cursor.execute('SELECT * FROM config WHERE key = "admin" AND value = ?', [uuid])
     return self.cursor.fetchone() != None
   
-  def set_time_limit(self, time_limit) -> None:
-    self.cursor.execute('UPDATE config SET value = ? WHERE key = "time_limit"', [time_limit])
+  def change_config(self, key, value) -> None:
+    self.cursor.execute('UPDATE config SET value = ? WHERE key = ?', [value, key])
     self.connection.commit()
     
   
