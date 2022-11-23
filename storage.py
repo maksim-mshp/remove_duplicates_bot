@@ -1,9 +1,11 @@
 import time
+import json
 import sqlite3
 
 class Storage:
   def __init__(self) -> None:
-    self.filename = "data.db"
+    with open("config.json") as f:
+      self.filename = json.loads(f.read())["database"]
     self.connection = sqlite3.connect(self.filename, check_same_thread=False)
     self.cursor = self.connection.cursor()
   

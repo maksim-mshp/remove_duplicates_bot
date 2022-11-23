@@ -4,6 +4,7 @@
 Для работы бота нужно получить токен через [@BotFather](https://t.me/BotFather) и создать файл `config.json`
 ```json
 {
-  "token": "BOT_TOKEN"
+  "token": "BOT_TOKEN",
+  "database": "data.db"
 }
 ```
