@@ -22,8 +22,9 @@ class Storage:
     self.connection.commit()
     
   def is_admin(self, uuid) -> bool:
-    self.cursor.execute('SELECT * FROM config WHERE key = "admin" AND value = ?', [uuid])
-    return self.cursor.fetchone() != None
+    with open("config.json") as f:
+      admins = json.loads(f.read())["admins"]
+      return uuid in admins
   
   def change_config(self, key, value) -> None:
     self.cursor.execute('UPDATE config SET value = ? WHERE key = ?', [value, key])
@@ -32,4 +33,4 @@ class Storage:
   
 if __name__ == "__main__":
   s = Storage()
-  print(s.is_admin(7301179558))
+  print(s.is_admin(730117958))

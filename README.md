@@ -5,6 +5,7 @@
 ```json
 {
   "token": "BOT_TOKEN",
-  "database": "data.db"
+  "database": "data.db",
+  "admins": []
 }
 ```

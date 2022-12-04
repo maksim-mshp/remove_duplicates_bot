@@ -3,3 +3,4 @@ data.json
 errors.log
 __pycache__/
 data_new.db
+.vscode/
