@@ -30,7 +30,11 @@ class Storage:
     self.cursor.execute('UPDATE config SET value = ? WHERE key = ?', [value, key])
     self.connection.commit()
     
+  def get_config(self, key) -> str:
+    self.cursor.execute("SELECT value from config WHERE key = ?", [key])
+    return self.cursor.fetchone()[0]
+    
   
 if __name__ == "__main__":
   s = Storage()
-  print(s.is_admin(730117958))
+  print(s.get_config('time_limit'))
