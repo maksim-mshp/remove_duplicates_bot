@@ -1,6 +1,7 @@
 import time
 import json
 import sqlite3
+from functions import is_duplicate
 
 class Storage:
   def __init__(self) -> None:
@@ -9,16 +10,38 @@ class Storage:
     self.connection = sqlite3.connect(self.filename, check_same_thread=False)
     self.cursor = self.connection.cursor()
   
-  def find(self, message):
-    self.cursor.execute('SELECT value FROM config WHERE key = "time_limit"')
-    time_limit = int(self.cursor.fetchone()[0]) * 60 * 60
+  def check(self, chat_id, message_id, words):
+    length = int(self.get_config('length'))
+    
+    if len(words) <= length:
+      return True
+    
+    time_limit = int(self.get_config('time_limit')) * 60 * 60
     now = int(time.time())
-    self.cursor.execute("SELECT * FROM messages WHERE chat = ? AND user = ? AND text = ? AND datetime > ?",
-                        [message.chat.id, message.from_user.id, message.text, now - time_limit])
-    return self.cursor.fetchone()
+    max_intersection = int(self.get_config('intersection'))
+    posts_limit = int(self.get_config('posts_limit'))
+    
+    self.cursor.execute("SELECT * FROM messages WHERE chat = ? AND user = ? AND datetime > ? AND length > ?",
+                        [chat_id, message_id, now - time_limit, length])
+    
+    messages = set()
+    
+    for i in self.cursor.fetchall():
+      i_words = i[3].split()
+      minimum = min(len(words), len(i_words))
+      maximum = max(len(words), len(i_words))
+      
+      messages.add(i[3])
+      
+      if (minimum / maximum) <= (max_intersection / 100):
+        continue
+      elif is_duplicate(words, i_words, max_intersection):
+          return False
+          
+    return len(messages) < posts_limit
   
-  def add(self, chat_id, message_id, user_id, text, words, date) -> None:
-    self.cursor.execute("INSERT INTO messages VALUES (?, ?, ?, ?, ?, ?)", [chat_id, message_id, user_id, text, words, date])
+  def add(self, chat_id, message_id, user_id, text, length, date) -> None:
+    self.cursor.execute("INSERT INTO messages VALUES (?, ?, ?, ?, ?, ?)", [chat_id, message_id, user_id, text, length, date])
     self.connection.commit()
     
   def is_admin(self, uuid) -> bool:

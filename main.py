@@ -33,10 +33,10 @@ def all(message):
     change_config(message)
     return
   
-  r = storage.find(message)
-  
-  if r != None:
+  if not storage.check(message.chat.id, message.from_user.id, words):
     bot.delete_message(message.chat.id, message.id)
+    
+    bot.send_message(message.chat.id, f"Сообщение от [{message.from_user.full_name}](tg://user?id={message.from_user.id}) было удалено.", parse_mode='markdown')
   
   storage.add(message.chat.id, message.id, message.from_user.id, text, len(words), message.date)
     
