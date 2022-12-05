@@ -4,6 +4,7 @@ import traceback
 import sys
 from storage import Storage
 from logger import Logger
+from functions import deEmojify
 
 with open("config.json") as f:
   token = json.loads(f.read())["token"]
@@ -25,7 +26,8 @@ def change_config(message):
 
 @bot.message_handler(content_types=['text'])
 def all(message):
-  words = message.text.split()
+  text = deEmojify(message.text)
+  words = text.split()
   
   if words[0].find("/set_") != -1:
     change_config(message)
@@ -36,7 +38,7 @@ def all(message):
   if r != None:
     bot.delete_message(message.chat.id, message.id)
   
-  storage.add(message)
+  storage.add(message.chat.id, message.id, message.from_user.id, text, len(words), message.date)
     
 def start():
   while True:

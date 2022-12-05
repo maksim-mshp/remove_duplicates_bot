@@ -17,8 +17,8 @@ class Storage:
                         [message.chat.id, message.from_user.id, message.text, now - time_limit])
     return self.cursor.fetchone()
   
-  def add(self, message) -> None:
-    self.cursor.execute("INSERT INTO messages VALUES (?, ?, ?, ?, ?)", [message.chat.id, message.id, message.from_user.id, message.text, message.date])
+  def add(self, chat_id, message_id, user_id, text, words, date) -> None:
+    self.cursor.execute("INSERT INTO messages VALUES (?, ?, ?, ?, ?, ?)", [chat_id, message_id, user_id, text, words, date])
     self.connection.commit()
     
   def is_admin(self, uuid) -> bool:
